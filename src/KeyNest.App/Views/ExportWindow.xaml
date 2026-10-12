@@ -1,0 +1,38 @@
+<Window x:Class="KeyNest.App.Views.ExportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="書き出し" Width="520" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="20,16,20,16">
+        <TextBlock Text="形式" FontWeight="SemiBold" Margin="0,0,0,6" />
+        <RadioButton x:Name="CsvRadio" GroupName="Format" IsChecked="True" Checked="Format_Changed">
+            <TextBlock TextWrapping="Wrap" Text="CSV（KeyNest 形式・UTF-8）― Excel で一覧を見る、ほかのソフトへ移す" />
+        </RadioButton>
+        <RadioButton x:Name="XmlRadio" GroupName="Format" Margin="0,4,0,0" Checked="Format_Changed">
+            <TextBlock TextWrapping="Wrap" Text="XML（ID Manager 互換・Shift_JIS）― 元の ID Manager や KeyNest に取り込む" />
+        </RadioButton>
+        <CheckBox x:Name="PersonalBox" Content="個人情報（氏名・住所など）も含める" Margin="28,6,0,0" IsEnabled="False" />
+
+        <TextBlock Text="範囲" FontWeight="SemiBold" Margin="0,16,0,6" />
+        <RadioButton x:Name="AllRadio" GroupName="Scope" Content="すべてのエントリ" IsChecked="True" />
+        <RadioButton x:Name="GroupRadio" GroupName="Scope" Margin="0,4,0,0" />
+
+        <Border Margin="0,16,0,0" Padding="12,10" CornerRadius="6"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource SystemFillColorCautionBrush}" BorderThickness="1">
+            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                       Text="書き出したファイルは、パスワードを含めて暗号化されていません。だれでも中身を読めるので、保存場所に注意し、用が済んだら確実に削除してください。" />
+        </Border>
+
+        <TextBlock Text="確認のため、マスターパスワードを入力してください" Margin="0,16,0,4" />
+        <PasswordBox x:Name="PasswordInput" />
+
+        <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"
+                   Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="書き出す..." Width="110" Style="{StaticResource AccentButtonStyle}" IsDefault="True" Click="Ok_Click" />
+            <Button Content="キャンセル" Width="90" Margin="8,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -20,6 +20,12 @@ public interface IDialogService
     /// <summary>個人情報の編集。OK で内容が変わったら true。</summary>
     bool EditPersonalInfo(PersonalInfo personal);
 
+    /// <summary>書き出しの確認（形式・範囲の選択と本人確認）。キャンセルなら null。</summary>
+    ExportChoice? ConfirmExport(string? selectedGroupName);
+
+    /// <summary>保存先のファイルを選ぶ。キャンセルなら null。</summary>
+    string? PickSaveFile(string defaultFileName, string filter);
+
     /// <summary>ID Manager の XML を取り込む前の確認。キャンセルなら null。</summary>
     ImportChoice? ConfirmImport(IdManagerXmlDocument document, string fileName, bool hasPersonalInfo);
 
@@ -38,6 +44,15 @@ public interface IDialogService
     /// <summary>マスターパスワードの変更。変更して保存したら true。</summary>
     bool ChangeMasterPassword();
 }
+
+public enum ExportFormat
+{
+    Csv,
+    IdManagerXml,
+}
+
+/// <summary>書き出し方の選択。</summary>
+public sealed record ExportChoice(ExportFormat Format, bool SelectedGroupOnly, bool IncludePersonalInfo);
 
 /// <summary>取り込み方の選択。</summary>
 public sealed record ImportChoice(string GroupName, bool ImportDates, bool ApplyFieldDefaults, bool ImportPersonalInfo);
@@ -76,6 +91,24 @@ public sealed class DialogService(Window owner, AppSettingsStore appSettings, Va
                 // パスとして不正な文字列なら初期位置は指定しない
             }
         }
+        return dialog.ShowDialog(owner) == true ? dialog.FileName : null;
+    }
+
+    public ExportChoice? ConfirmExport(string? selectedGroupName)
+    {
+        var dialog = new ExportWindow(session, selectedGroupName) { Owner = owner };
+        return dialog.ShowDialog() == true ? dialog.Choice : null;
+    }
+
+    public string? PickSaveFile(string defaultFileName, string filter)
+    {
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "書き出し先の選択",
+            FileName = defaultFileName,
+            Filter = filter,
+            OverwritePrompt = true,
+        };
         return dialog.ShowDialog(owner) == true ? dialog.FileName : null;
     }
 

@@ -80,6 +80,12 @@
                     <TextBlock Text="取り込み" />
                 </StackPanel>
             </Button>
+            <Button Command="{Binding ExportCommand}" Margin="6,0,0,0" ToolTip="CSV・XML に書き出す（暗号化されません）">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE898;" Style="{StaticResource Icon}" Margin="0,0,6,0" />
+                    <TextBlock Text="書き出し" />
+                </StackPanel>
+            </Button>
             <Button Command="{Binding SettingsCommand}" Margin="6,0,0,0" ToolTip="設定">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="&#xE713;" Style="{StaticResource Icon}" Margin="0,0,6,0" />

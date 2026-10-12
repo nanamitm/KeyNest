@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using KeyNest.App.Services;
 using KeyNest.Core.AutoTyping;
+using KeyNest.Core.Export;
 using KeyNest.Core.Import;
 using KeyNest.Core.Models;
 using KeyNest.Core.Security;
@@ -48,6 +49,7 @@ public sealed class MainViewModel : ObservableObject
         LockCommand = new RelayCommand(() => LockRequested?.Invoke(this, EventArgs.Empty));
         SettingsCommand = new RelayCommand(EditSettings);
         ImportIdManagerCommand = new RelayCommand(ImportIdManager);
+        ExportCommand = new RelayCommand(Export);
         EditAutoTypesCommand = new RelayCommand(EditAutoTypes);
         PersonalInfoCommand = new RelayCommand(EditPersonalInfo);
         AutoTypeCommand = new RelayCommand(RequestAutoType, () => SelectedEntry is not null);
@@ -79,6 +81,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand LockCommand { get; }
     public RelayCommand SettingsCommand { get; }
     public RelayCommand ImportIdManagerCommand { get; }
+    public RelayCommand ExportCommand { get; }
     public RelayCommand EditAutoTypesCommand { get; }
     public RelayCommand PersonalInfoCommand { get; }
     public RelayCommand AutoTypeCommand { get; }
@@ -384,6 +387,38 @@ public sealed class MainViewModel : ObservableObject
         if (vaultChanged is null) return;
         if (vaultChanged == true) MarkDirty();
         Status = "設定を変更しました";
+    }
+
+    /// <summary>CSV（KeyNest 形式）または XML（ID Manager 互換）に書き出す。書き出したファイルは暗号化されない。</summary>
+    private void Export()
+    {
+        var group = SelectedGroup is { IsRoot: false } selected ? selected : null;
+        if (_dialogs.ConfirmExport(group?.Name) is not { } choice) return;
+
+        var root = choice.SelectedGroupOnly && group is not null ? group.Model : _session.Vault.Root;
+        var settings = _session.Vault.Settings;
+        var (result, extension, filter) = choice.Format switch
+        {
+            ExportFormat.IdManagerXml => (
+                VaultExporter.ToIdManagerXml(root, settings, choice.IncludePersonalInfo ? _session.Vault.Personal : null),
+                "xml", "ID Manager 互換 XML (*.xml)|*.xml"),
+            _ => (VaultExporter.ToCsv(root, settings), "csv", "CSV ファイル (*.csv)|*.csv"),
+        };
+        if (_dialogs.PickSaveFile($"KeyNest_{DateTime.Now:yyyyMMdd}.{extension}", filter) is not { } path) return;
+
+        try
+        {
+            File.WriteAllBytes(path, result.Data);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _dialogs.ShowError($"書き出せませんでした。\n{ex.Message}");
+            return;
+        }
+        var dropped = result.DroppedCommandCount > 0
+            ? $"ID Manager に無いコマンド {result.DroppedCommandCount} 件は貼り付けタイプから外しました。"
+            : "";
+        Status = $"{result.EntryCount} 件のエントリを {Path.GetFileName(path)} に書き出しました。{dropped}暗号化されていないので、用が済んだら削除してください";
     }
 
     /// <summary>元の ID Manager の XML 出力を、新しいグループとして取り込む（既存のデータは変更しない）。</summary>

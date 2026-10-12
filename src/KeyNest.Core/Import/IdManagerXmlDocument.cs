@@ -28,7 +28,7 @@ public sealed partial class IdManagerXmlDocument
     /// ID Manager の「設定できるキー一覧」の番号 → KeyNest のコマンド。一覧に無い番号は取り込み時に手順から外す。
     /// （ID Manager のキー一覧には 姓・名（フリガナ）は無い）
     /// </summary>
-    private static readonly string?[] CommandMap =
+    internal static readonly string?[] CommandMap =
     [
         AutoTypeCommands.Title,                                          // 0  Title
         AutoTypeCommands.FieldLabel(0), AutoTypeCommands.FieldValue(0),  // 1  Account項目名, 2 Account ID
