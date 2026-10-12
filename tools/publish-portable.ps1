@@ -43,6 +43,9 @@ if (-not (Test-Path $marker)) {
     )
 }
 
+# MIT ライセンスは配布物に著作権表示とライセンス文を含めることが条件なので同梱する
+Copy-Item (Join-Path $root "LICENSE"), (Join-Path $root "README.md") -Destination $Output -Force
+
 $exe = Get-Item (Join-Path $Output "KeyNest.exe")
 Write-Host ("作成しました: {0}（{1:N1} MB）" -f $exe.FullName, ($exe.Length / 1MB))
 

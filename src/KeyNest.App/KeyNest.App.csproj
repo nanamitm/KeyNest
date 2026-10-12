@@ -7,6 +7,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>KeyNest</AssemblyName>
+    <Version>0.1.0</Version>
+    <Product>KeyNest</Product>
+    <Copyright>Copyright (c) 2026 nanamitm</Copyright>
     <RootNamespace>KeyNest.App</RootNamespace>
     <!-- Windows Hello（Windows.Security.Credentials）を使うため Windows 10 SDK の API を対象にする -->
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
