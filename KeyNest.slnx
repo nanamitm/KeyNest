@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/KeyNest.App/KeyNest.App.csproj" />
+    <Project Path="src/KeyNest.Core/KeyNest.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/KeyNest.Core.Tests/KeyNest.Core.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.knv
+*.knv.bak
+*.knv.tmp
+
+# 動作確認で撮ったスクリーンショット
+screenshot-*.png

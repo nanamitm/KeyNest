@@ -1,0 +1,13 @@
+<Window x:Class="KeyNest.App.Views.MessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        MinWidth="360" MaxWidth="560" SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False">
+    <StackPanel Margin="24,20,24,18">
+        <DockPanel>
+            <TextBlock x:Name="IconText" DockPanel.Dock="Left" FontFamily="{StaticResource IconFont}" FontSize="28"
+                       VerticalAlignment="Top" Margin="0,0,16,0" Visibility="Collapsed" />
+            <TextBlock x:Name="MessageText" TextWrapping="Wrap" VerticalAlignment="Center" LineHeight="20" />
+        </DockPanel>
+        <StackPanel x:Name="ButtonPanel" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0" />
+    </StackPanel>
+</Window>

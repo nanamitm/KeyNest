@@ -1,0 +1,107 @@
+<Window x:Class="KeyNest.App.Views.AutoTypeEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="貼り付けタイプの編集" Width="860" Height="560" MinWidth="720" MinHeight="420"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources>
+        <Style x:Key="Heading" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+        <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="0,0,6,0" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20,16,20,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.ColumnSpan="5" Margin="0,0,0,12" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                   Text="自動入力で送る手順を名前を付けて登録し、エントリごとに選びます。一覧の先頭のタイプは、貼り付け方法を指定していないエントリの既定になります。" />
+
+        <!-- 貼り付けタイプの一覧 -->
+        <DockPanel Grid.Row="1">
+            <TextBlock DockPanel.Dock="Top" Text="貼り付けタイプ" Style="{StaticResource Heading}" />
+            <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                <Button Content="新規作成" Style="{StaticResource IconButton}" Click="AddTemplate_Click" />
+                <Button x:Name="RenameButton" Content="名前変更" Style="{StaticResource IconButton}" Click="RenameTemplate_Click" />
+                <Button x:Name="DeleteButton" Content="削除" Style="{StaticResource IconButton}" Click="DeleteTemplate_Click" />
+                <Button x:Name="TemplateUpButton" Content="&#xE70E;" FontFamily="{StaticResource IconFont}" ToolTip="上へ"
+                        Style="{StaticResource IconButton}" Click="MoveTemplateUp_Click" />
+                <Button x:Name="TemplateDownButton" Content="&#xE70D;" FontFamily="{StaticResource IconFont}" ToolTip="下へ"
+                        Style="{StaticResource IconButton}" Click="MoveTemplateDown_Click" />
+            </WrapPanel>
+            <ListBox x:Name="TemplateList" SelectionChanged="TemplateList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="（既定）" Margin="6,0,0,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDefault}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- 選択中のタイプのコマンド -->
+        <DockPanel Grid.Row="1" Grid.Column="2">
+            <TextBlock DockPanel.Dock="Top" Text="コマンド（上から順に送る）" Style="{StaticResource Heading}" />
+            <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                <Button x:Name="RemoveCommandButton" Content="コマンド削除" Style="{StaticResource IconButton}" Click="RemoveCommand_Click" />
+                <Button x:Name="CommandUpButton" Content="&#xE70E;" FontFamily="{StaticResource IconFont}" ToolTip="上へ"
+                        Style="{StaticResource IconButton}" Click="MoveCommandUp_Click" />
+                <Button x:Name="CommandDownButton" Content="&#xE70D;" FontFamily="{StaticResource IconFont}" ToolTip="下へ"
+                        Style="{StaticResource IconButton}" Click="MoveCommandDown_Click" />
+            </WrapPanel>
+            <ListBox x:Name="CommandList" DisplayMemberPath="Name" SelectionChanged="CommandList_SelectionChanged" />
+        </DockPanel>
+
+        <Button Grid.Row="1" Grid.Column="3" x:Name="AddCommandButton" Margin="12,0" VerticalAlignment="Center"
+                ToolTip="選んだコマンドを追加（ダブルクリックでも追加）" Click="AddCommand_Click">
+            <TextBlock Text="&#xE76B;" FontFamily="{StaticResource IconFont}" />
+        </Button>
+
+        <!-- 追加できるコマンド -->
+        <DockPanel Grid.Row="1" Grid.Column="4">
+            <TextBlock DockPanel.Dock="Top" Text="追加できるコマンド" Style="{StaticResource Heading}" />
+            <ListBox x:Name="CatalogList" DisplayMemberPath="Name" MouseDoubleClick="CatalogList_MouseDoubleClick"
+                     SelectionChanged="CatalogList_SelectionChanged" />
+        </DockPanel>
+
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,16,0,0">
+            <TextBlock Text="「待機」コマンドで待つ時間" VerticalAlignment="Center" />
+            <TextBox x:Name="DelayBox" Width="90" Margin="10,0,6,0" HorizontalContentAlignment="Right" />
+            <TextBlock Text="ミリ秒" VerticalAlignment="Center" />
+            <TextBlock x:Name="ErrorText" Margin="16,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"
+                       Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="OK" Width="90" Style="{StaticResource AccentButtonStyle}" IsDefault="True" Click="Ok_Click" />
+            <Button Content="キャンセル" Width="90" Margin="8,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>

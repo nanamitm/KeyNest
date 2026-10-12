@@ -1,0 +1,191 @@
+<Window x:Class="KeyNest.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="設定" Width="900" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources>
+        <Style x:Key="Section" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+        <Style x:Key="Heading" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,4,0,10" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Option" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Margin" Value="0,2,0,2" />
+        </Style>
+        <Style x:Key="SubOption" TargetType="CheckBox" BasedOn="{StaticResource Option}">
+            <Setter Property="Margin" Value="28,2,0,2" />
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="20,16,20,16">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 左列: データファイルに保存する設定 -->
+            <StackPanel>
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="新規エントリの項目" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="新しくエントリを作成するときの、4つの欄の項目名と伏せ字の初期値です。作成後は各エントリで自由に変更でき、ここを変えても既存のエントリには影響しません。" />
+                        <ItemsControl x:Name="FieldRows">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="44" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Number, StringFormat=欄{0}}" VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                        <TextBox Grid.Column="1" Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}" />
+                                        <CheckBox Grid.Column="2" Content="伏せ字" Margin="16,0,0,0" MinWidth="0"
+                                                  IsChecked="{Binding IsMasked}" VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="初期値に戻す" HorizontalAlignment="Left" Click="ResetFields_Click" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="クリップボード" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}" Text="コピーした値を自動で消去するまでの秒数です（0 で消去しません）。" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="ClipboardSecondsBox" Width="90" HorizontalContentAlignment="Right" />
+                            <TextBlock Text="秒" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="ウィンドウ" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="メイン画面のサイズ・位置・最大化の状態と、ツリーの幅を次回の起動時に復元します。" />
+                        <CheckBox x:Name="SavePlacementBox" Content="ウィンドウのサイズと位置を保存する" Style="{StaticResource Option}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="自動入力" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="メイン画面から自動入力すると、KeyNest に切り替える直前に使っていたウィンドウへ入力します。オフにすると KeyNest を表示したまま入力します。" />
+                        <CheckBox x:Name="MinimizeOnAutoTypeBox" Content="自動入力するときに KeyNest を最小化する" Style="{StaticResource Option}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="自動ロック" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="一定時間操作しないと自動でロックします。ロックするときに未保存の変更は自動で保存します。" />
+                        <CheckBox x:Name="AutoLockBox" Content="一定時間操作しないとロックする" Style="{StaticResource Option}" />
+                        <StackPanel Margin="28,6,0,0" IsEnabled="{Binding IsChecked, ElementName=AutoLockBox}">
+                            <ComboBox x:Name="AutoLockModeBox" HorizontalAlignment="Left" MinWidth="260" DisplayMemberPath="Text" />
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <TextBlock Text="が" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox x:Name="AutoLockMinutesBox" Width="80" HorizontalContentAlignment="Right" />
+                                <TextBlock Text="分を超えたらロックする" VerticalAlignment="Center" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- 右列: アプリ設定（settings.json） -->
+            <StackPanel Grid.Column="2">
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="タスクトレイ" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="常駐すると、ウィンドウを閉じる・最小化したときにタスクトレイに格納します。終了はトレイアイコンの右クリックメニューから行います。" />
+                        <CheckBox x:Name="TrayEnabledBox" Content="タスクトレイに常駐する" Style="{StaticResource Option}" />
+                        <CheckBox x:Name="StartInTrayBox" Content="起動時はタスクトレイに格納する" Style="{StaticResource SubOption}"
+                                  IsEnabled="{Binding IsChecked, ElementName=TrayEnabledBox}" />
+                        <CheckBox x:Name="RequirePasswordBox" Content="トレイから表示するときにマスターパスワードを求める" Style="{StaticResource SubOption}"
+                                  IsEnabled="{Binding IsChecked, ElementName=TrayEnabledBox}" />
+                        <CheckBox x:Name="BlockMenuBox" Margin="56,2,0,2"
+                                  IsEnabled="{Binding IsChecked, ElementName=RequirePasswordBox}">
+                            <TextBlock TextWrapping="Wrap" Text="その間はトレイ・ホットキーのメニューから値を取り出せないようにする" />
+                        </CheckBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="ホットキー" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="どのアプリを使っていても、ホットキーでエントリのメニューをマウスの位置に表示します。" />
+                        <CheckBox x:Name="HotkeyEnabledBox" Content="ホットキーでメニューを表示する" Style="{StaticResource Option}" />
+                        <StackPanel Orientation="Horizontal" Margin="28,6,0,6"
+                                    IsEnabled="{Binding IsChecked, ElementName=HotkeyEnabledBox}">
+                            <ComboBox x:Name="ModifierBox" Width="150" DisplayMemberPath="Text" />
+                            <TextBlock Text="+" Margin="10,0" VerticalAlignment="Center" />
+                            <ComboBox x:Name="KeyBox" Width="90" DisplayMemberPath="Text" />
+                        </StackPanel>
+                        <CheckBox x:Name="PasteBox" Style="{StaticResource SubOption}"
+                                  IsEnabled="{Binding IsChecked, ElementName=HotkeyEnabledBox}">
+                            <TextBlock TextWrapping="Wrap" Text="メニューで選んだ値を、直前に使っていたウィンドウに貼り付ける（オフならコピーのみ）" />
+                        </CheckBox>
+                        <TextBlock Style="{StaticResource Hint}" Margin="28,6,0,0" FontSize="12"
+                                   Text="トレイアイコンの右クリックメニューからは、コピーのみ行います。" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="マスターパスワード" Style="{StaticResource Heading}" />
+                        <DockPanel Margin="0,4,0,0">
+                            <Button DockPanel.Dock="Right" Content="変更..." MinWidth="110" Click="ChangeMasterPassword_Click" />
+                            <TextBlock x:Name="MasterPasswordText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,12,0"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="変更はすぐにデータファイルへ保存されます。" />
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Text="Windows Hello" Style="{StaticResource Heading}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="顔認証・指紋・PIN でロック解除できるようにします。登録はこの PC だけで有効で、マスターパスワードでのロック解除も引き続き使えます。登録・解除はすぐに反映されます。" />
+                        <DockPanel>
+                            <Button x:Name="HelloButton" DockPanel.Dock="Right" MinWidth="110" IsEnabled="False" Click="Hello_Click" />
+                            <TextBlock x:Name="HelloStatusText" Text="確認しています…" VerticalAlignment="Center" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,12,0" />
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock x:Name="ErrorText" Margin="0,0,0,8" TextWrapping="Wrap" Visibility="Collapsed"
+                   Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" Width="90" Style="{StaticResource AccentButtonStyle}" IsDefault="True" Click="Ok_Click" />
+            <Button Content="キャンセル" Width="90" Margin="8,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

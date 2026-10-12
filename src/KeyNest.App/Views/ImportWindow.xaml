@@ -1,0 +1,33 @@
+<Window x:Class="KeyNest.App.Views.ImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ID Manager から取り込み" Width="520" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="20,16,20,16">
+        <TextBlock x:Name="FileText" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+        <TextBlock x:Name="SummaryText" Margin="0,4,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+        <TextBlock Text="取り込み先のグループ名" Margin="0,16,0,4" />
+        <TextBox x:Name="GroupNameBox" />
+        <TextBlock Margin="0,6,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                   Text="ID Manager のフォルダ構成のまま、この名前の新しいグループの下に追加します。既存のデータは変更しません。" />
+
+        <CheckBox x:Name="ImportDatesBox" Content="発行日・有効期限も取り込む" Margin="0,16,0,0" />
+        <TextBlock x:Name="DatesWarningText" Margin="28,4,0,0" TextWrapping="Wrap" Visibility="Collapsed"
+                   Foreground="{DynamicResource SystemFillColorCautionBrush}"
+                   Text="すべての項目が同じ発行日と、その1年後の有効期限になっています。ID Manager が自動で入れた値の可能性が高く、取り込むと1年後に全エントリが期限切れと表示されるため、オフにしています。" />
+
+        <CheckBox x:Name="ImportPersonalBox" Margin="0,12,0,0">
+            <TextBlock x:Name="ImportPersonalText" TextWrapping="Wrap" />
+        </CheckBox>
+
+        <CheckBox x:Name="ApplyDefaultsBox" Margin="0,12,0,0">
+            <TextBlock x:Name="ApplyDefaultsText" TextWrapping="Wrap" />
+        </CheckBox>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="取り込む" Width="100" Style="{StaticResource AccentButtonStyle}" IsDefault="True" Click="Ok_Click" />
+            <Button Content="キャンセル" Width="90" Margin="8,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>
