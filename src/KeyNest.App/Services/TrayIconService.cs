@@ -11,7 +11,6 @@ public sealed class TrayIconService : IDisposable
 {
     private readonly Forms.NotifyIcon _icon;
     private readonly Forms.ContextMenuStrip _menu;
-    private readonly IntPtr _iconHandle;
     private IntPtr _pendingPasteTarget;
 
     public TrayIconService()
@@ -28,7 +27,7 @@ public sealed class TrayIconService : IDisposable
         _icon = new Forms.NotifyIcon
         {
             Text = "KeyNest",
-            Icon = CreateIcon(out _iconHandle),
+            Icon = LoadIcon(),
             ContextMenuStrip = _menu,
         };
         _icon.MouseDoubleClick += (_, e) =>
@@ -67,46 +66,20 @@ public sealed class TrayIconService : IDisposable
         NativeMethods.SetForegroundWindow(_menu.Handle);
     }
 
-    /// <summary>実行時に鍵アイコンを描いて作る（アイコンファイルを持たないため）。</summary>
-    private static Drawing.Icon CreateIcon(out IntPtr handle)
+    /// <summary>アプリのアイコン（Assets/KeyNest.ico）から、通知領域に合ったサイズを読み込む。</summary>
+    private static Drawing.Icon LoadIcon()
     {
-        using var bitmap = new Drawing.Bitmap(32, 32);
-        using (var g = Drawing.Graphics.FromImage(bitmap))
-        {
-            g.SmoothingMode = Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            g.TextRenderingHint = Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-            using var background = new Drawing.SolidBrush(Drawing.Color.FromArgb(0x1F, 0x8A, 0xD2));
-            g.FillEllipse(background, 0, 0, 31, 31);
-
-            using var font = CreateIconFont(18);
-            using var foreground = new Drawing.SolidBrush(Drawing.Color.White);
-            using var format = new Drawing.StringFormat
-            {
-                Alignment = Drawing.StringAlignment.Center,
-                LineAlignment = Drawing.StringAlignment.Center,
-            };
-            g.DrawString("", font, foreground, new Drawing.RectangleF(0, 1, 32, 32), format);
-        }
-        handle = bitmap.GetHicon();
-        return Drawing.Icon.FromHandle(handle);
-    }
-
-    private static Drawing.Font CreateIconFont(float size)
-    {
-        foreach (var name in new[] { "Segoe Fluent Icons", "Segoe MDL2 Assets" })
-        {
-            var font = new Drawing.Font(name, size, Drawing.GraphicsUnit.Pixel);
-            if (font.Name == name) return font; // 見つからないと別フォントに置き換わる
-            font.Dispose();
-        }
-        return new Drawing.Font(Drawing.SystemFonts.DefaultFont.FontFamily, size, Drawing.GraphicsUnit.Pixel);
+        var resource = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Assets/KeyNest.ico"))
+            ?? throw new InvalidOperationException("アイコンのリソースが見つかりません。");
+        using var stream = resource.Stream;
+        return new Drawing.Icon(stream, Forms.SystemInformation.SmallIconSize);
     }
 
     public void Dispose()
     {
         _icon.Visible = false;
+        _icon.Icon?.Dispose();
         _icon.Dispose();
         _menu.Dispose();
-        NativeMethods.DestroyIcon(_iconHandle);
     }
 }

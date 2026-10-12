@@ -14,7 +14,14 @@
     <UseWPF>true</UseWPF>
     <!-- タスクトレイの NotifyIcon にだけ WinForms を使う -->
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- exe とウィンドウのアイコン（tools/generate-icon.ps1 で作成） -->
+    <ApplicationIcon>Assets\KeyNest.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- トレイアイコン用にアプリ内からも読む -->
+    <Resource Include="Assets\KeyNest.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- WPF と型名が衝突するため、WinForms の暗黙 using は外して必要な所だけ明示する -->
