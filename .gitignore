@@ -6,5 +6,8 @@ obj/
 *.knv.bak
 *.knv.tmp
 
+# tools/publish-portable.ps1 の出力
+publish/
+
 # 動作確認で撮ったスクリーンショット
 screenshot-*.png

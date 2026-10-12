@@ -209,6 +209,9 @@ public sealed class WindowsHelloService
 /// </summary>
 public static class HelloEnrollmentStore
 {
+    /// <summary>登録情報を置くフォルダ（設定画面の表示用）。</summary>
+    public static string DirectoryPath => Directory;
+
     private static string Directory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KeyNest", "hello");
 

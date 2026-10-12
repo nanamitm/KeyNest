@@ -29,8 +29,18 @@
         </Style>
     </Window.Resources>
 
-    <StackPanel Margin="20,16,20,16">
-        <Grid>
+    <!-- 項目が多く縦に長いので、画面に収まらないときは設定部分だけスクロールする（ボタンは常に表示） -->
+    <DockPanel Margin="20,16,20,16">
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+            <TextBlock x:Name="ErrorText" Margin="0,0,0,8" TextWrapping="Wrap" Visibility="Collapsed"
+                       Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="OK" Width="90" Style="{StaticResource AccentButtonStyle}" IsDefault="True" Click="Ok_Click" />
+                <Button Content="キャンセル" Width="90" Margin="8,0,0,0" IsCancel="True" />
+            </StackPanel>
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <Grid Margin="0,0,14,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="12" />
@@ -177,15 +187,39 @@
                         </DockPanel>
                     </StackPanel>
                 </Border>
+
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="フォルダを開く" Click="OpenDataFolder_Click" />
+                            <TextBlock Text="保存場所" Style="{StaticResource Heading}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <TextBlock x:Name="ModeText" Margin="0,8,0,0" FontWeight="SemiBold" />
+                        <TextBlock x:Name="ModeHintText" Style="{StaticResource Hint}" Margin="0,2,0,8" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="データファイル" Margin="0,0,12,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="VaultPathText" Grid.Column="1" Margin="0,0,0,4" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="1" Text="アプリの設定" Margin="0,0,12,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="SettingsPathText" Grid.Row="1" Grid.Column="1" Margin="0,0,0,4" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="2" Text="Windows Hello" Margin="0,0,12,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="HelloPathText" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" />
+                        </Grid>
+                        <TextBlock x:Name="PortableWarningText" Margin="0,8,0,0" TextWrapping="Wrap" Visibility="Collapsed"
+                                   Foreground="{DynamicResource SystemFillColorCautionBrush}"
+                                   Text="データファイルが KeyNest.exe のフォルダの外にあります。持ち歩くときは、データファイルも一緒にコピーしてください。" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </Grid>
-
-        <TextBlock x:Name="ErrorText" Margin="0,0,0,8" TextWrapping="Wrap" Visibility="Collapsed"
-                   Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="OK" Width="90" Style="{StaticResource AccentButtonStyle}" IsDefault="True" Click="Ok_Click" />
-            <Button Content="キャンセル" Width="90" Margin="8,0,0,0" IsCancel="True" />
-        </StackPanel>
-    </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
 </Window>

@@ -144,7 +144,7 @@ public sealed class DialogService(Window owner, AppSettingsStore appSettings, Va
 
     public bool? EditSettings(VaultSettings settings, Func<bool> changeMasterPassword)
     {
-        var dialog = new SettingsWindow(settings, appSettings.Current.Clone(), hello, changeMasterPassword) { Owner = owner };
+        var dialog = new SettingsWindow(settings, appSettings.Current.Clone(), hello, changeMasterPassword, session.FilePath) { Owner = owner };
         if (dialog.ShowDialog() != true) return null;
         try
         {

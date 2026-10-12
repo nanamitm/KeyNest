@@ -107,7 +107,8 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand<object> CopyFieldCommand { get; }
     public RelayCommand<object> GenerateFieldCommand { get; }
 
-    public string WindowTitle => $"KeyNest - {Path.GetFileName(_session.FilePath)}{(IsDirty ? " *" : "")}";
+    public string WindowTitle =>
+        $"KeyNest{(AppPaths.IsPortable ? "（ポータブル）" : "")} - {Path.GetFileName(_session.FilePath)}{(IsDirty ? " *" : "")}";
     public string FilePath => _session.FilePath;
 
     /// <summary>ツリーで選択された節。エントリ選択中は、その親グループが追加先になる。</summary>

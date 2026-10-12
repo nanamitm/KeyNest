@@ -13,6 +13,13 @@ public static class AppPaths
 
     public static string DefaultVaultPath => Path.Combine(DataDirectory, "vault.knv");
 
+    /// <summary>ファイルが exe のフォルダ（USB メモリ側）の中にあるか。</summary>
+    public static bool IsUnderAppDirectory(string path)
+    {
+        var baseDir = Path.TrimEndingDirectorySeparator(Path.GetFullPath(AppContext.BaseDirectory)) + Path.DirectorySeparatorChar;
+        return Path.GetFullPath(path).StartsWith(baseDir, StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>ロック解除前に必要なアプリ設定（暗号化しない）。</summary>
     public static string SettingsPath => Path.Combine(DataDirectory, "settings.json");
 }

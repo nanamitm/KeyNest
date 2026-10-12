@@ -45,11 +45,17 @@ public partial class SettingsWindow : Window
     private readonly VaultSettings _vaultSettings;
     private readonly VaultHelloController _hello;
     private readonly Func<bool> _changeMasterPassword;
+    private readonly string _vaultPath;
     private List<FieldRow> _rows;
 
-    public SettingsWindow(VaultSettings vaultSettings, AppSettings appSettings, VaultHelloController hello, Func<bool> changeMasterPassword)
+    public SettingsWindow(VaultSettings vaultSettings, AppSettings appSettings, VaultHelloController hello, Func<bool> changeMasterPassword,
+        string vaultPath)
     {
         InitializeComponent();
+        // 縦に長いので画面の作業領域に収める（あふれた分は設定部分がスクロールする）
+        MaxHeight = SystemParameters.WorkArea.Height - 24;
+        _vaultPath = vaultPath;
+        ShowStorageLocations();
         _vaultSettings = vaultSettings;
         _hello = hello;
         _changeMasterPassword = changeMasterPassword;
@@ -140,6 +146,35 @@ public partial class SettingsWindow : Window
             AppSettings.MainWindowPlacement = null; // 保存しないなら前回の配置も残さない
 
         DialogResult = true;
+    }
+
+    // ---- 保存場所 ----
+
+    private void ShowStorageLocations()
+    {
+        if (AppPaths.IsPortable)
+        {
+            ModeText.Text = "ポータブルモード";
+            ModeHintText.Text = "KeyNest.exe のフォルダに保存しています。フォルダごと USB メモリなどにコピーして持ち歩けます。";
+            PortableWarningText.Visibility = AppPaths.IsUnderAppDirectory(_vaultPath) ? Visibility.Collapsed : Visibility.Visible;
+        }
+        else
+        {
+            ModeText.Text = "通常モード";
+            ModeHintText.Text = "この PC のユーザーフォルダに保存しています。KeyNest.exe と同じフォルダに portable という名前のファイルを置くと、ポータブルモードになります。";
+        }
+        VaultPathText.Text = _vaultPath;
+        SettingsPathText.Text = AppPaths.SettingsPath;
+        HelloPathText.Text = $"{HelloEnrollmentStore.DirectoryPath}（この PC だけに保存し、持ち歩きません）";
+    }
+
+    private void OpenDataFolder_Click(object sender, RoutedEventArgs e)
+    {
+        // データファイルを選んだ状態でエクスプローラーを開く
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", $"/select,\"{_vaultPath}\"")
+        {
+            UseShellExecute = true,
+        });
     }
 
     private async void ChangeMasterPassword_Click(object sender, RoutedEventArgs e)
